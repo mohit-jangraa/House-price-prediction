@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bangalore Property Valuation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Blueprint grid backdrop -->
+  <svg class="grid-backdrop" id="gridBackdrop" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+
+  <div class="page">
+
+    <header class="topbar">
+      <div class="wordmark">
+        <span class="wordmark-mark">⌖</span> Mohit Kumar
+      </div>
+      <div class="topbar-tag">Bangalore Valuations · XGBoost Model</div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Property valuation, surveyed</p>
+        <h1 class="headline">What's your Bangalore home actually worth?</h1>
+        <p class="subhead">
+          A data-backed estimate trained on real listings across 240+ localities —
+          tell us the size, the square footage, and where, and we'll draft a valuation.
+        </p>
+      </section>
+
+      <section class="workspace">
+
+        <!-- LEFT: Survey form card -->
+        <form class="card survey-card" id="surveyForm" novalidate>
+          <div class="card-header">
+            <span class="card-index">01</span>
+            <div>
+              <h2>Survey details</h2>
+              <p>The three fields our model actually looks at.</p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="size">Size <span class="field-hint">BHK / bedrooms</span></label>
+            <div class="input-shell">
+              <input type="number" id="size" name="size" min="1" max="16" step="1" value="2" required>
+              <span class="input-suffix">BHK</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="sqft">Total area <span class="field-hint">carpet + built-up, as listed</span></label>
+            <div class="input-shell">
+              <input type="number" id="sqft" name="sqft" min="100" step="10" placeholder="e.g. 1250" required>
+              <span class="input-suffix">sq ft</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="location">Locality <span class="field-hint">start typing to search</span></label>
+            <div class="input-shell">
+              <input type="text" id="location" name="location" placeholder="e.g. Whitefield" list="locationList" autocomplete="off" required>
+            </div>
+            <datalist id="locationList"></datalist>
+            <p class="field-note" id="locationNote" hidden></p>
+          </div>
+
+          <button type="submit" class="stamp-button" id="submitBtn">
+            <span class="stamp-button-label">Draft the valuation</span>
+            <svg class="stamp-button-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <p class="form-error" id="formError" hidden></p>
+        </form>
+
+        <!-- RIGHT: Result panel -->
+        <div class="card result-card" id="resultCard">
+
+          <div class="result-state" id="stateEmpty">
+            <svg class="compass" viewBox="0 0 100 100" aria-hidden="true">
+              <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 5"/>
+              <line x1="50" y1="8" x2="50" y2="20" stroke="currentColor" stroke-width="1.2"/>
+              <line x1="50" y1="80" x2="50" y2="92" stroke="currentColor" stroke-width="1.2"/>
+              <line x1="8" y1="50" x2="20" y2="50" stroke="currentColor" stroke-width="1.2"/>
+              <line x1="80" y1="50" x2="92" y2="50" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M50 30 L58 50 L50 70 L42 50 Z" fill="currentColor" opacity="0.5"/>
+            </svg>
+            <p>Fill in the survey and we'll stamp an estimate here.</p>
+          </div>
+
+          <div class="result-state" id="stateLoading" hidden>
+            <svg class="compass spinning" viewBox="0 0 100 100" aria-hidden="true">
+              <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="8 6"/>
+              <path d="M50 30 L58 50 L50 70 L42 50 Z" fill="currentColor"/>
+            </svg>
+            <p>Surveying comparable listings…</p>
+          </div>
+
+          <div class="result-state" id="stateError" hidden>
+            <svg class="err-icon" viewBox="0 0 100 100" aria-hidden="true">
+              <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1.2"/>
+              <line x1="50" y1="30" x2="50" y2="58" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="50" cy="70" r="2.6" fill="currentColor"/>
+            </svg>
+            <p id="errorMessage">Couldn't reach the valuation engine.</p>
+            <button type="button" class="retry-button" id="retryBtn">Try again</button>
+          </div>
+
+          <div class="result-state" id="stateResult" hidden>
+            <div class="stamp-wrap">
+              <div class="stamp" id="stamp">
+                <span class="stamp-ring-text">PLINTH · ESTIMATED VALUE · BANGALORE ·</span>
+                <span class="stamp-price" id="stampPrice">₹0</span>
+                <span class="stamp-unit" id="stampUnit">Lakh</span>
+              </div>
+            </div>
+            <dl class="breakdown">
+              <div class="breakdown-row">
+                <dt>Rate</dt>
+                <dd id="breakdownRate">—</dd>
+              </div>
+              <div class="breakdown-row">
+                <dt>Basis</dt>
+                <dd id="breakdownBasis">—</dd>
+              </div>
+            </dl>
+            <p class="result-note" id="resultNote" hidden></p>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      <p>Estimates are model-generated from historical listing data and aren't a formal appraisal or guarantee of sale price.</p>
+    </footer>
+  </div>
+
+<script src="script.js"></script>
+</body>
+</html>
