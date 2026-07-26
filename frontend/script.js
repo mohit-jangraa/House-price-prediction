@@ -4,7 +4,7 @@
 
 // Point this at wherever your FastAPI app (main.py) is actually running.
 // Locally that's usually http://127.0.0.1:8000 — update for a deployed API.
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "https://house-price-prediction-ng0y.onrender.com";
 const PREDICT_ENDPOINT = `${API_BASE}/predict`;
 
 // ---------------------------------------------------------------------
